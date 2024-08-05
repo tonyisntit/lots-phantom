@@ -1,0 +1,42 @@
+<!-- web/static/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lots Phantom Registration</title>
+</head>
+<body>
+    <h1>Register with Phantom Wallet</h1>
+    <button id="connect-wallet">Connect Phantom Wallet</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/solana-web3.js/1.30.0/solana-web3.min.js"></script>
+    <script>
+        document.getElementById('connect-wallet').addEventListener('click', async () => {
+            try {
+                const provider = window.solana;
+                if (provider && provider.isPhantom) {
+                    const resp = await provider.connect();
+                    const publicKey = resp.publicKey.toString();
+                    
+                    // Send the public key to your backend for registration
+                    fetch('/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ publicKey })
+                    })
+                    .then(response => response.json())
+                    .then(data => console.log(data))
+                    .catch(error => console.error('Error:', error));
+                } else {
+                    alert('Phantom wallet not found. Please install it.');
+                }
+            } catch (err) {
+                console.error('Error connecting to Phantom wallet', err);
+            }
+        });
+    </script>
+</body>
+</html>
